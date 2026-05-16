@@ -74,6 +74,16 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
 
         {/* Video Grid */}
         <main className="flex-1 p-4 md:p-6 pt-0 min-h-0 flex flex-col md:flex-row gap-4">
+          {remoteStream && (
+            <div className="flex-1 md:w-1/2 transition-all duration-500">
+              <VideoPlayer
+                stream={remoteStream}
+                name="Remote User"
+                className="h-full w-full"
+              />
+            </div>
+          )}
+          
           <div className={cn(
             "flex-1 transition-all duration-500",
             remoteStream ? "md:w-1/2" : "w-full"
@@ -86,16 +96,6 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
               className="h-full w-full"
             />
           </div>
-          
-          {remoteStream && (
-            <div className="flex-1 md:w-1/2 transition-all duration-500">
-              <VideoPlayer
-                stream={remoteStream}
-                name="Remote User"
-                className="h-full w-full"
-              />
-            </div>
-          )}
         </main>
 
         {/* Control Bar Container */}
