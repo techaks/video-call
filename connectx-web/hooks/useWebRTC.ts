@@ -21,6 +21,7 @@ export type ChatMessage = {
 
 export function useWebRTC(roomId: string, userName: string) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   
   const [isMicOn, setIsMicOn] = useState(true);
@@ -128,9 +129,10 @@ export function useWebRTC(roomId: string, userName: string) {
       setRemoteStream(event.streams[0]);
     };
 
-    if (localStream) {
-      localStream.getTracks().forEach((track) => {
-        pc.addTrack(track, localStream);
+    const currentLocalStream = localStreamRef.current;
+    if (currentLocalStream) {
+      currentLocalStream.getTracks().forEach((track) => {
+        pc.addTrack(track, currentLocalStream);
       });
     }
 
@@ -144,6 +146,7 @@ export function useWebRTC(roomId: string, userName: string) {
         audio: true,
       });
       setLocalStream(stream);
+      localStreamRef.current = stream;
       return stream;
     } catch (error) {
       console.error('Error accessing media devices.', error);
@@ -172,8 +175,9 @@ export function useWebRTC(roomId: string, userName: string) {
   }, [initSocket]);
 
   const toggleMic = () => {
-    if (localStream) {
-      const audioTrack = localStream.getAudioTracks()[0];
+    const currentLocalStream = localStreamRef.current;
+    if (currentLocalStream) {
+      const audioTrack = currentLocalStream.getAudioTracks()[0];
       if (audioTrack) {
         audioTrack.enabled = !audioTrack.enabled;
         setIsMicOn(audioTrack.enabled);
@@ -182,8 +186,9 @@ export function useWebRTC(roomId: string, userName: string) {
   };
 
   const toggleCamera = () => {
-    if (localStream) {
-      const videoTrack = localStream.getVideoTracks()[0];
+    const currentLocalStream = localStreamRef.current;
+    if (currentLocalStream) {
+      const videoTrack = currentLocalStream.getVideoTracks()[0];
       if (videoTrack) {
         videoTrack.enabled = !videoTrack.enabled;
         setIsCameraOn(videoTrack.enabled);
@@ -212,6 +217,7 @@ export function useWebRTC(roomId: string, userName: string) {
         setLocalStream((prevStream) => {
           if (prevStream) {
             const newStream = new MediaStream([screenTrack, ...prevStream.getAudioTracks()]);
+            localStreamRef.current = newStream;
             return newStream;
           }
           return prevStream;
@@ -241,6 +247,7 @@ export function useWebRTC(roomId: string, userName: string) {
     setLocalStream((prevStream) => {
       if (prevStream) {
         const newStream = new MediaStream([videoTrack, ...prevStream.getAudioTracks()]);
+        localStreamRef.current = newStream;
         return newStream;
       }
       return prevStream;
