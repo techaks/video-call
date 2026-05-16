@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useWebRTC } from '@/hooks/useWebRTC';
 import { VideoPlayer } from '@/components/VideoPlayer';
@@ -20,6 +20,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
 
   const [isCopied, setIsCopied] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const prevMessagesLength = useRef(0);
 
   const {
     localStream,
@@ -34,6 +36,24 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     toggleScreenShare,
     sendMessage,
   } = useWebRTC(roomId, userName);
+
+  useEffect(() => {
+    if (messages.length > prevMessagesLength.current) {
+      const newMessages = messages.slice(prevMessagesLength.current);
+      const remoteMessages = newMessages.filter(m => !m.isLocal);
+      
+      if (!isChatOpen && remoteMessages.length > 0) {
+        setUnreadCount(prev => prev + remoteMessages.length);
+      }
+    }
+    prevMessagesLength.current = messages.length;
+  }, [messages, isChatOpen]);
+
+  useEffect(() => {
+    if (isChatOpen) {
+      setUnreadCount(0);
+    }
+  }, [isChatOpen]);
 
   const handleCopyLink = () => {
     const url = `${window.location.origin}/?room=${roomId}`;
@@ -110,6 +130,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             onToggleScreenShare={toggleScreenShare}
             onToggleChat={() => setIsChatOpen(!isChatOpen)}
             onLeaveCall={handleLeaveCall}
+            unreadCount={unreadCount}
           />
         </div>
       </div>

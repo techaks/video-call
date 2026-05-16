@@ -12,6 +12,7 @@ interface ControlBarProps {
   onToggleScreenShare: () => void;
   onToggleChat: () => void;
   onLeaveCall: () => void;
+  unreadCount?: number;
 }
 
 
@@ -25,6 +26,7 @@ export function ControlBar({
   onToggleScreenShare,
   onToggleChat,
   onLeaveCall,
+  unreadCount = 0,
 }: ControlBarProps) {
   return (
     <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-6 rounded-2xl bg-white/5 px-4 md:px-6 py-3 md:py-4 backdrop-blur-xl border border-white/10 shadow-2xl">
@@ -55,14 +57,21 @@ export function ControlBar({
         <MonitorUp className="h-5 w-5" />
       </Button>
 
-      <Button
-        variant={isChatOpen ? 'default' : 'secondary'}
-        size="icon"
-        className="rounded-full h-10 w-10 md:h-12 md:w-12 transition-all hover:scale-105 md:hidden shrink-0"
-        onClick={onToggleChat}
-      >
-        <MessageSquare className="h-5 w-5" />
-      </Button>
+      <div className="relative md:hidden shrink-0">
+        <Button
+          variant={isChatOpen ? 'default' : 'secondary'}
+          size="icon"
+          className="rounded-full h-10 w-10 md:h-12 md:w-12 transition-all hover:scale-105"
+          onClick={onToggleChat}
+        >
+          <MessageSquare className="h-5 w-5" />
+        </Button>
+        {unreadCount > 0 && (
+          <div className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-[10px] font-bold text-white shadow-[0_0_12px_rgba(34,197,94,0.8)] animate-pulse border-2 border-slate-900 pointer-events-none">
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </div>
+        )}
+      </div>
 
       <div className="w-px h-8 bg-white/10 mx-2 hidden md:block" />
 
