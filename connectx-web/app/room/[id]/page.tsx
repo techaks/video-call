@@ -99,7 +99,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         </main>
 
         {/* Control Bar Container */}
-        <div className="p-6 pt-2 flex justify-center pb-8 shrink-0 z-10 bg-slate-950/80 backdrop-blur-sm md:bg-transparent">
+        <div className="px-4 py-3 md:p-6 md:pt-2 flex justify-center pb-5 md:pb-8 shrink-0 z-10 bg-slate-950/80 backdrop-blur-sm md:bg-transparent">
           <ControlBar
             isMicOn={isMicOn}
             isCameraOn={isCameraOn}
