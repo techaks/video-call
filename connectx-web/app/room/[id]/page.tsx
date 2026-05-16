@@ -56,19 +56,19 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         isChatOpen ? "md:pr-4" : ""
       )}>
         {/* Header */}
-        <header className="flex items-center justify-between p-4 md:p-6">
-          <div className="flex items-center gap-3 glass-card rounded-full px-4 py-2">
-            <Users className="w-5 h-5 text-blue-400" />
-            <span className="font-medium">Room: {roomId}</span>
+        <header className="flex items-center justify-between p-3 md:p-6">
+          <div className="flex items-center gap-2 md:gap-3 glass-card rounded-full px-3 md:px-4 py-1.5 md:py-2">
+            <Users className="w-4 h-4 md:w-5 md:h-5 text-blue-400 shrink-0" />
+            <span className="font-medium text-xs sm:text-sm md:text-base truncate max-w-[100px] sm:max-w-[150px] md:max-w-none">Room: {roomId}</span>
           </div>
           
           <Button 
             variant="outline" 
-            className="rounded-full glass-card border-slate-700 hover:bg-slate-800"
+            className="rounded-full glass-card border-slate-700 hover:bg-slate-800 text-xs sm:text-sm h-8 sm:h-9 md:h-10 px-3 md:px-4 shrink-0"
             onClick={handleCopyLink}
           >
-            {isCopied ? <Check className="w-4 h-4 mr-2 text-green-400" /> : <Copy className="w-4 h-4 mr-2" />}
-            {isCopied ? 'Copied' : 'Copy Invite'}
+            {isCopied ? <Check className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2 text-green-400" /> : <Copy className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />}
+            {isCopied ? 'Copied' : 'Copy'}
           </Button>
         </header>
 

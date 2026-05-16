@@ -34,7 +34,7 @@ export function ChatSidebar({ messages, onSendMessage, isOpen, onClose }: ChatSi
   return (
     <div
       className={cn(
-        "fixed inset-y-0 right-0 z-50 w-80 bg-slate-900/95 backdrop-blur-xl border-l border-white/10 shadow-2xl transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col h-full rounded-l-2xl md:rounded-2xl overflow-hidden",
+        "fixed inset-y-0 right-0 z-50 w-full sm:w-80 bg-slate-900/95 backdrop-blur-xl border-l border-white/10 shadow-2xl transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col h-full rounded-none sm:rounded-l-2xl md:rounded-2xl overflow-hidden",
         isOpen ? "translate-x-0" : "translate-x-full hidden md:flex"
       )}
     >
