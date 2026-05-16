@@ -149,14 +149,12 @@ export function useWebRTC(roomId: string, userName: string) {
 
     pc.ontrack = (event) => {
       if (event.streams && event.streams[0]) {
-        setRemoteStream(new MediaStream(event.streams[0].getTracks()));
+        setRemoteStream(event.streams[0]);
       } else {
         setRemoteStream((prevStream) => {
-          if (!prevStream) {
-            return new MediaStream([event.track]);
-          }
-          prevStream.addTrack(event.track);
-          return new MediaStream(prevStream.getTracks());
+          const stream = prevStream || new MediaStream();
+          stream.addTrack(event.track);
+          return stream;
         });
       }
     };
@@ -179,10 +177,7 @@ export function useWebRTC(roomId: string, userName: string) {
           height: { ideal: 360, max: 480 },
           frameRate: { ideal: 15, max: 24 }
         },
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-        },
+        audio: true,
       });
       setLocalStream(stream);
       localStreamRef.current = stream;
