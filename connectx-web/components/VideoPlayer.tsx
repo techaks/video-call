@@ -15,12 +15,25 @@ export function VideoPlayer({ stream, isLocal = false, isMicOn = true, name, cla
 
   useEffect(() => {
     if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.play().catch((err) => {
-        console.error("Autoplay failed:", err);
-      });
+      if (videoRef.current.srcObject !== stream) {
+        videoRef.current.srcObject = stream;
+      }
+      
+      const attemptPlay = () => {
+        videoRef.current?.play().catch((err) => {
+          console.error("Autoplay failed:", err);
+        });
+      };
+
+      attemptPlay();
+
+      stream.addEventListener('addtrack', attemptPlay);
+      
+      return () => {
+        stream.removeEventListener('addtrack', attemptPlay);
+      };
     }
-  }, [stream]);
+  }); // Run on every render to ensure play() is called if stream mutates
 
   return (
     <div className={cn("relative overflow-hidden rounded-2xl bg-slate-900 shadow-xl ring-1 ring-white/10 flex items-center justify-center", className)}>

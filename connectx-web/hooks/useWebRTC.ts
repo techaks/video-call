@@ -23,6 +23,7 @@ export function useWebRTC(roomId: string, userName: string) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const [remoteStreamTick, setRemoteStreamTick] = useState(0);
   
   const [isMicOn, setIsMicOn] = useState(true);
   const [isCameraOn, setIsCameraOn] = useState(true);
@@ -157,6 +158,8 @@ export function useWebRTC(roomId: string, userName: string) {
           return stream;
         });
       }
+      // Force a re-render so VideoPlayer components can react to new tracks
+      setRemoteStreamTick(t => t + 1);
     };
 
     const currentLocalStream = localStreamRef.current;
