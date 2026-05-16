@@ -53,10 +53,13 @@ io.on('connection', (socket) => {
       socket.to(data.to).emit('ice-candidate', { from: socket.id, candidate: data.candidate });
     });
 
-    // Chat functionality
     socket.on('chat-message', (data) => {
       // data: { message: string, sender: string, timestamp: number }
       socket.to(roomId).emit('chat-message', { ...data, fromId: socket.id });
+    });
+
+    socket.on('reaction', (emoji) => {
+      socket.to(roomId).emit('reaction', { emoji, fromId: socket.id });
     });
 
     socket.on('disconnect', () => {

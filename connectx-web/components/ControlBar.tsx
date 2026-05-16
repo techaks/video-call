@@ -12,6 +12,7 @@ interface ControlBarProps {
   onToggleScreenShare: () => void;
   onToggleChat: () => void;
   onLeaveCall: () => void;
+  onSendReaction: (emoji: string) => void;
   unreadCount?: number;
 }
 
@@ -26,8 +27,10 @@ export function ControlBar({
   onToggleScreenShare,
   onToggleChat,
   onLeaveCall,
+  onSendReaction,
   unreadCount = 0,
 }: ControlBarProps) {
+  const reactions = ['❤️', '😂', '👍', '🔥'];
   return (
     <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-6 rounded-2xl bg-white/5 px-4 md:px-6 py-3 md:py-4 backdrop-blur-xl border border-white/10 shadow-2xl">
       <Button
@@ -56,6 +59,18 @@ export function ControlBar({
       >
         <MonitorUp className="h-5 w-5" />
       </Button>
+
+      <div className="flex items-center gap-1 sm:gap-2 px-2 py-1 glass-card rounded-full border-slate-700/50">
+        {reactions.map((emoji) => (
+          <button
+            key={emoji}
+            onClick={() => onSendReaction(emoji)}
+            className="text-xl md:text-2xl hover:scale-125 transition-transform active:scale-95 p-1"
+          >
+            {emoji}
+          </button>
+        ))}
+      </div>
 
       <div className="relative md:hidden shrink-0">
         <Button

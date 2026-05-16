@@ -34,6 +34,7 @@ export function useWebRTC(roomId: string, userName: string) {
   
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [lastReaction, setLastReaction] = useState<{ emoji: string; id: number } | null>(null);
   
   const socketRef = useRef<Socket | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
@@ -125,6 +126,16 @@ export function useWebRTC(roomId: string, userName: string) {
           isLocal: false,
         },
       ]);
+
+      // Trigger reaction if it's a single emoji
+      const emojiRegex = /^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])$/;
+      if (emojiRegex.test(data.text.trim())) {
+        setLastReaction({ emoji: data.text.trim(), id: Date.now() });
+      }
+    });
+
+    socketRef.current.on('reaction', (data: { emoji: string; fromId: string }) => {
+      setLastReaction({ emoji: data.emoji, id: Date.now() });
     });
 
     socketRef.current.on('user-disconnected', (userId: string) => {
@@ -309,6 +320,17 @@ export function useWebRTC(roomId: string, userName: string) {
     });
     
     setMessages((prev) => [...prev, msg]);
+
+    // Trigger reaction locally if it's a single emoji
+    const emojiRegex = /^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])$/;
+    if (emojiRegex.test(text.trim())) {
+      setLastReaction({ emoji: text.trim(), id: Date.now() });
+    }
+  };
+
+  const sendReaction = (emoji: string) => {
+    socketRef.current?.emit('reaction', emoji);
+    setLastReaction({ emoji, id: Date.now() });
   };
 
   return {
@@ -323,5 +345,7 @@ export function useWebRTC(roomId: string, userName: string) {
     toggleCamera,
     toggleScreenShare,
     sendMessage,
+    sendReaction,
+    lastReaction,
   };
 }

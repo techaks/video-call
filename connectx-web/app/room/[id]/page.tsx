@@ -6,6 +6,7 @@ import { useWebRTC } from '@/hooks/useWebRTC';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { ControlBar } from '@/components/ControlBar';
 import { ChatSidebar } from '@/components/ChatSidebar';
+import { FloatingReactions } from '@/components/FloatingReactions';
 import { Button } from '@/components/ui/button';
 import { Copy, Check, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -35,6 +36,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     toggleCamera,
     toggleScreenShare,
     sendMessage,
+    sendReaction,
+    lastReaction,
   } = useWebRTC(roomId, userName);
 
   useEffect(() => {
@@ -130,10 +133,13 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             onToggleScreenShare={toggleScreenShare}
             onToggleChat={() => setIsChatOpen(!isChatOpen)}
             onLeaveCall={handleLeaveCall}
+            onSendReaction={sendReaction}
             unreadCount={unreadCount}
           />
         </div>
       </div>
+
+      <FloatingReactions lastReaction={lastReaction} />
 
       {/* Chat Sidebar */}
       <ChatSidebar
