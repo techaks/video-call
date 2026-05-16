@@ -34,6 +34,23 @@ export function useWebRTC(roomId: string, userName: string) {
   const socketRef = useRef<Socket | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const remoteUserIdRef = useRef<string | null>(null);
+  const iceCandidateQueueRef = useRef<RTCIceCandidateInit[]>([]);
+
+  const flushIceCandidates = useCallback(async () => {
+    const pc = peerConnectionRef.current;
+    if (!pc || !pc.remoteDescription) return;
+    
+    while (iceCandidateQueueRef.current.length > 0) {
+      const candidate = iceCandidateQueueRef.current.shift();
+      if (candidate) {
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (e) {
+          console.error('Error adding queued ice candidate', e);
+        }
+      }
+    }
+  }, []);
 
   const initSocket = useCallback(() => {
     // Determine backend URL
@@ -66,6 +83,7 @@ export function useWebRTC(roomId: string, userName: string) {
         await createPeerConnection(data.from);
       }
       await peerConnectionRef.current?.setRemoteDescription(new RTCSessionDescription(data.offer));
+      await flushIceCandidates();
       const answer = await peerConnectionRef.current?.createAnswer();
       if (answer) {
         await peerConnectionRef.current?.setLocalDescription(answer);
@@ -76,15 +94,19 @@ export function useWebRTC(roomId: string, userName: string) {
     socketRef.current.on('answer', async (data: { from: string; answer: RTCSessionDescriptionInit }) => {
       console.log('Received answer from:', data.from);
       await peerConnectionRef.current?.setRemoteDescription(new RTCSessionDescription(data.answer));
+      await flushIceCandidates();
     });
 
     socketRef.current.on('ice-candidate', async (data: { from: string; candidate: RTCIceCandidateInit }) => {
-      if (peerConnectionRef.current) {
+      const pc = peerConnectionRef.current;
+      if (pc && pc.remoteDescription) {
         try {
-          await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+          await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
         } catch (e) {
           console.error('Error adding received ice candidate', e);
         }
+      } else {
+        iceCandidateQueueRef.current.push(data.candidate);
       }
     });
 
