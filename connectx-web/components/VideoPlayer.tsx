@@ -16,6 +16,9 @@ export function VideoPlayer({ stream, isLocal = false, isMicOn = true, name, cla
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
+      videoRef.current.play().catch((err) => {
+        console.error("Autoplay failed:", err);
+      });
     }
   }, [stream]);
 

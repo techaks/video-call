@@ -148,7 +148,17 @@ export function useWebRTC(roomId: string, userName: string) {
     };
 
     pc.ontrack = (event) => {
-      setRemoteStream(event.streams[0]);
+      if (event.streams && event.streams[0]) {
+        setRemoteStream(new MediaStream(event.streams[0].getTracks()));
+      } else {
+        setRemoteStream((prevStream) => {
+          if (!prevStream) {
+            return new MediaStream([event.track]);
+          }
+          prevStream.addTrack(event.track);
+          return new MediaStream(prevStream.getTracks());
+        });
+      }
     };
 
     const currentLocalStream = localStreamRef.current;
