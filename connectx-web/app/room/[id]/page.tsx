@@ -49,10 +49,10 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   };
 
   return (
-    <div className="flex h-screen bg-slate-950 overflow-hidden">
+    <div className="flex h-[100dvh] bg-slate-950 overflow-hidden">
       {/* Main Content */}
       <div className={cn(
-        "flex-1 flex flex-col transition-all duration-300",
+        "flex-1 flex flex-col transition-all duration-300 h-[100dvh]",
         isChatOpen ? "md:pr-4" : ""
       )}>
         {/* Header */}
@@ -99,7 +99,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         </main>
 
         {/* Control Bar Container */}
-        <div className="p-6 pt-2 flex justify-center pb-8">
+        <div className="p-6 pt-2 flex justify-center pb-8 shrink-0 z-10 bg-slate-950/80 backdrop-blur-sm md:bg-transparent">
           <ControlBar
             isMicOn={isMicOn}
             isCameraOn={isCameraOn}
