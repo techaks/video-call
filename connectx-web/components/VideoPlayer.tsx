@@ -15,30 +15,12 @@ export function VideoPlayer({ stream, isLocal = false, isMicOn = true, name, cla
 
   useEffect(() => {
     if (videoRef.current && stream) {
-      // Always assign srcObject when tracks change to force browser refresh
+      // Force browser to evaluate tracks by re-assigning srcObject
       videoRef.current.srcObject = stream;
       
-      const attemptPlay = () => {
-        videoRef.current?.play().catch((err) => {
-          console.error("Autoplay failed:", err);
-        });
-      };
-
-      attemptPlay();
-
-      const handleAddTrack = () => {
-        // Force browser to recognize the new track by re-assigning srcObject
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          attemptPlay();
-        }
-      };
-
-      stream.addEventListener('addtrack', handleAddTrack);
-      
-      return () => {
-        stream.removeEventListener('addtrack', handleAddTrack);
-      };
+      videoRef.current.play().catch((err) => {
+        console.error("Autoplay failed:", err);
+      });
     }
   }, [stream, stream?.getTracks().length]); // Re-run when tracks change
 
