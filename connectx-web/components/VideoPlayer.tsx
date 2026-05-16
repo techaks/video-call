@@ -15,9 +15,8 @@ export function VideoPlayer({ stream, isLocal = false, isMicOn = true, name, cla
 
   useEffect(() => {
     if (videoRef.current && stream) {
-      if (videoRef.current.srcObject !== stream) {
-        videoRef.current.srcObject = stream;
-      }
+      // Always assign srcObject when tracks change to force browser refresh
+      videoRef.current.srcObject = stream;
       
       const attemptPlay = () => {
         videoRef.current?.play().catch((err) => {
@@ -27,13 +26,21 @@ export function VideoPlayer({ stream, isLocal = false, isMicOn = true, name, cla
 
       attemptPlay();
 
-      stream.addEventListener('addtrack', attemptPlay);
+      const handleAddTrack = () => {
+        // Force browser to recognize the new track by re-assigning srcObject
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          attemptPlay();
+        }
+      };
+
+      stream.addEventListener('addtrack', handleAddTrack);
       
       return () => {
-        stream.removeEventListener('addtrack', attemptPlay);
+        stream.removeEventListener('addtrack', handleAddTrack);
       };
     }
-  }); // Run on every render to ensure play() is called if stream mutates
+  }, [stream, stream?.getTracks().length]); // Re-run when tracks change
 
   return (
     <div className={cn("relative overflow-hidden rounded-2xl bg-slate-900 shadow-xl ring-1 ring-white/10 flex items-center justify-center", className)}>
