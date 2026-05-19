@@ -46,7 +46,7 @@ function HomeContent() {
             <Video className="w-8 h-8 text-blue-400" />
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
-            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">ConnectX</span>
+            Welcome to <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-500">ConnectX</span>
           </h1>
           <p className="text-slate-400 text-lg">Premium 1-to-1 video calling. Fast, secure, and beautiful UI.</p>
         </div>
